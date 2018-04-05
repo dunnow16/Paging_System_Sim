@@ -28,6 +28,24 @@ public class Process {
 		pcb = new Pcb(pid, pageSize, tSize, dSize, freeFrames);
 	}
 	
+	/**
+	 * This method releases all memory allocated to a process. The
+	 * frames previously used in physical memory by the process are 
+	 * added to the free-frame list. 
+	 * @param freeFrames
+	 */
+	public void free(LinkedList<Integer> freeFrames) {
+		int[] pageT = pcb.getPageTableT();
+		int[] pageD = pcb.getPageTableD();
+		
+		for(int pg : pageT) {
+			freeFrames.add(new Integer(pg));
+		}
+		for(int pg : pageD) {
+			freeFrames.add(new Integer(pg));
+		}
+	}
+	
 	public Pcb getPcb() {
 		return pcb;
 	}

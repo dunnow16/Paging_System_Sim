@@ -6,5 +6,6 @@ package sim_paging_system;
  */
 public enum ProcessStatus {
 	WAIT,  /* Not enough memory available for process. */
-	RUN    /* Enough memory available for process.	   */
+	RUN,   /* Enough memory available for process.	   */
+	HALT   /* End the process (free all its memory).   */
 }

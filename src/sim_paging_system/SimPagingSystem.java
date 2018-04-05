@@ -132,6 +132,16 @@ public class SimPagingSystem {
 			// and free all of its memory.
 			if (tokens[1].compareTo("Halt") == 0) {
 				System.out.println("Ending process " + pid + ".");
+				// Find if the id is within the process list. Remove
+				// that process from the list if it is found after 
+				// deallocating all of its physical memory.
+				for(Process pr : sim.processList) {
+					if( pr.getPcb().getPid() == pid ) {
+						pr.free(sim.freeFrames);    // free frames used
+						sim.processList.remove(pr); // remove process
+						break;
+					}
+				}
 			}
 			// If the second token is a number, then use as 
 			// TextSize and then get DataSize if available.
@@ -147,16 +157,16 @@ public class SimPagingSystem {
 								TextSize, DataSize, sim.freeFrames);
 				// Add the new process to the list of processes.
 				sim.processList.add(p);
-				
-				// Print all the page tables for all processes.
-				System.out.println("Page table(s)");
-				for(Process pr : sim.processList)
-					sim.printProcessPageTables(pr);
-				
-				// Print the physical memory frame page table.
-				
-				
 			}
+			
+			// Print all the page tables for all processes.
+			System.out.println("Page table(s)");
+			for(Process pr : sim.processList)
+				sim.printProcessPageTables(pr);
+			
+			// Print the physical memory frame page table.
+			
+			
 		}
 		
 		System.out.println("All memory events have been processed.");
