@@ -24,8 +24,8 @@ public class Process {
 	 * @param freeFrames
 	 */
 	public Process(int pid, int pageSize, int tSize, int dSize,
-				   LinkedList<Integer> freeFrames) {
-		pcb = new Pcb(pid, pageSize, tSize, dSize, freeFrames);
+				   LinkedList<Integer> freeFrames, String[] frameTable) {
+		pcb = new Pcb(pid, pageSize, tSize, dSize, freeFrames, frameTable);
 	}
 	
 	/**
@@ -34,15 +34,19 @@ public class Process {
 	 * added to the free-frame list. 
 	 * @param freeFrames
 	 */
-	public void free(LinkedList<Integer> freeFrames) {
+	public void free(LinkedList<Integer> freeFrames, 
+			         String[] frameTable) {
 		int[] pageT = pcb.getPageTableT();
 		int[] pageD = pcb.getPageTableD();
 		
 		for(int pg : pageT) {
 			freeFrames.add(new Integer(pg));
+			// Clear the printable frame table entry.
+			frameTable[pg] = " ";  
 		}
 		for(int pg : pageD) {
 			freeFrames.add(new Integer(pg));
+			frameTable[pg] = " ";
 		}
 	}
 	

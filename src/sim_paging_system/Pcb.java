@@ -32,14 +32,15 @@ public class Pcb {
 	 * @param dSize the data size in bytes
 	 */
 	public Pcb(int pid, int pageSize, int tSize, int dSize, 
-			   LinkedList<Integer> freeFrames) {
+			   LinkedList<Integer> freeFrames, String[] frameTable) {
 		this.pid = pid;
 		this.pageSize = pageSize;
 		numTextFrames = (int)Math.ceil((float)tSize / pageSize);
 		numDataFrames = (int)Math.ceil((float)dSize / pageSize);
 		
 		// Create a page table for the process.
-		createPageTable(numTextFrames, numDataFrames, freeFrames);
+		createPageTable(numTextFrames, numDataFrames, freeFrames, 
+					    frameTable);
 	}
 	
 	/**
@@ -49,12 +50,14 @@ public class Pcb {
 	 * sections separately. The variables 'numTextFrames' and 
 	 * 'numDataFrames' are used to know the size of each page table.
 	 * A list of free frames kept by the operating system (Sim class)
-	 * is used to find free frames to map pages.
+	 * is used to find free frames to map pages. The frame table is 
+	 * updated as the page tables are updated.
 	 * @param numTextFrames
 	 * @param numDataFrames
 	 */
 	private void createPageTable(int numTextFrames, int numDataFrames,
-								 LinkedList<Integer> freeFrames) {
+								 LinkedList<Integer> freeFrames,
+								 String[] frameTable) {
 		pageTableT = new int[numTextFrames];
 		pageTableD = new int[numDataFrames];
 		
@@ -72,11 +75,13 @@ public class Pcb {
 		// Create the text page table.
 		for(int i = 0; i < numTextFrames; ++i) {
 			pageTableT[i] = freeFrames.removeFirst();
+			frameTable[pageTableT[i]] = "P" + pid + " Text Page " + i;
 		}
 		
 		// Create the data page table.
 		for(int i = 0; i < numDataFrames; ++i) {
 			pageTableD[i] = freeFrames.removeFirst();
+			frameTable[pageTableD[i]] = "P" + pid + " Data Page " + i;
 		}
 	}
 	

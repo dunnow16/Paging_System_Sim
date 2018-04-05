@@ -17,7 +17,7 @@ import java.util.Scanner;
  */
 public class SimPagingSystem {
 	/** the size of a page or frame in bytes */
-	private final static int pageSize = 512;
+	public final static int pageSize = 512;
 	/** the total amount of physical memory */
 	private final static int totalM = 4096; 
 	/** the number of frames in the system */
@@ -28,7 +28,7 @@ public class SimPagingSystem {
 	private LinkedList<Integer> freeFrames;
 	/** the processes currently in memory */
 	private LinkedList<Process> processList;
-	
+
 	/**
 	 * Constructor: Create a SimPagingSystem object. This object can
 	 * be used to simulate a paging system. 
@@ -45,6 +45,18 @@ public class SimPagingSystem {
 //		for(Integer f : freeFrames) {
 //			System.out.println(f);
 //		}
+	}
+	
+	public String[] getFrameTable() {
+		return frameTable;
+	}
+
+	public LinkedList<Integer> getFreeFrames() {
+		return freeFrames;
+	}
+
+	public LinkedList<Process> getProcessList() {
+		return processList;
 	}
 	
 	/**
@@ -86,6 +98,23 @@ public class SimPagingSystem {
 	}
 	
 	/**
+	 * This method prints the physical memory state of the system.
+	 * @param processList
+	 */
+	public void printMemory(LinkedList<Process> processList) {
+		System.out.println("Physical Memory / Frame Table");
+		System.out.println("Frame#  ProcID  Segment  Page#");
+//		for(Process pr : processList) {
+//			if( pr.getPcb().getPid() ==  0) {
+//				
+//			}
+//		}
+		for(int i  = 0; i < frameTable.length; ++i) {
+			System.out.println("    " + i + "        " + frameTable[i]);
+		}
+	}
+	
+	/**
 	 * The main method hosts the top level of the operating system
 	 * where the loader and memory management systems are called from.
 	 * @param args
@@ -99,8 +128,6 @@ public class SimPagingSystem {
 		// in the simulation until the user presses the 'next' button
 		// or hits the space bar.
 		try {
-		// TODO May prompt for file name here.
-		// TODO ADD GUI in addition or to replace command line input/display
 		// Hard code a new file name if using a different one.
 		FileInputStream fstream = new FileInputStream("input3a.data");
 		DataInputStream in = new DataInputStream(fstream);
@@ -137,8 +164,10 @@ public class SimPagingSystem {
 				// deallocating all of its physical memory.
 				for(Process pr : sim.processList) {
 					if( pr.getPcb().getPid() == pid ) {
-						pr.free(sim.freeFrames);    // free frames used
-						sim.processList.remove(pr); // remove process
+						// free frames used
+						pr.free(sim.freeFrames, sim.frameTable);
+						// remove process
+						sim.processList.remove(pr); 
 						break;
 					}
 				}
@@ -154,7 +183,8 @@ public class SimPagingSystem {
 						" TextSize = " + TextSize + ", DataSize = " +
 						DataSize + ".");
 				p = new Process(pid, SimPagingSystem.pageSize, 
-								TextSize, DataSize, sim.freeFrames);
+								TextSize, DataSize, sim.freeFrames,
+								sim.frameTable);
 				// Add the new process to the list of processes.
 				sim.processList.add(p);
 			}
@@ -165,7 +195,7 @@ public class SimPagingSystem {
 				sim.printProcessPageTables(pr);
 			
 			// Print the physical memory frame page table.
-			
+			sim.printMemory(sim.processList);
 			
 		}
 		
