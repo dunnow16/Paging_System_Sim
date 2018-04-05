@@ -26,14 +26,25 @@ public class SimPagingSystem {
 	private String[] frameTable;
 	/** linked list of free frames in the operating system. */
 	private LinkedList<Integer> freeFrames;
+	/** the processes currently in memory */
+	private LinkedList<Process> processList;
 	
+	/**
+	 * Constructor: Create a SimPagingSystem object. This object can
+	 * be used to simulate a paging system. 
+	 */
 	public SimPagingSystem() {
+		int i = 0;
+		freeFrames = new LinkedList<Integer>();
+		processList = new LinkedList<Process>();
 		frameTable = new String[totalFrames];
-		for(int i = 0; i < totalFrames; ++i) {
+		for(i = 0; i < totalFrames; ++i) {
 			frameTable[i] = " ";
-			freeFrames.add(i);
+			freeFrames.add(new Integer(i));
 		}
-		
+//		for(Integer f : freeFrames) {
+//			System.out.println(f);
+//		}
 	}
 	
 	/**
@@ -47,12 +58,42 @@ public class SimPagingSystem {
 	}
 	
 	/**
+	 * This method prints the page tables for the text and data 
+	 * segments.
+	 * @param p process that has its page tables printed
+	 * @return none
+	 */
+	public void printProcessPageTables(Process p) {
+		// Retrieve the text and data page tables from the process' PCB.
+		int[] pageT = p.getPcb().getPageTableT();
+		int[] pageD = p.getPcb().getPageTableD();
+		
+		// Print the two page tables of the process.
+		System.out.println("Process " + p.getPcb().getPid() + ":");
+		System.out.println("\tPage\tFrame");
+		for(int i = 0; i < pageT.length; ++i) {
+			if(i == 0)
+				System.out.println("Text\t  " + i + "\t  " + pageT[i]);
+			else
+				System.out.println("\t  " + i + "\t  " + pageT[i]);
+		}
+		for(int i = 0; i < pageD.length; ++i) {
+			if(i == 0)
+				System.out.println("Data\t  " + i + "\t  " + pageD[i]);
+			else
+				System.out.println("\t  " + i + "\t  " + pageD[i]);
+		}
+	}
+	
+	/**
 	 * The main method hosts the top level of the operating system
 	 * where the loader and memory management systems are called from.
 	 * @param args
 	 */
 	public static void main(String[] args) { 
 		System.out.println("Simulated Paging System\n");
+		// Create a simulation object to run the simulation.
+		SimPagingSystem sim = new SimPagingSystem();
 		
 		// Read the file line by line for events. Process each event
 		// in the simulation until the user presses the 'next' button
@@ -70,6 +111,8 @@ public class SimPagingSystem {
 		Scanner s = new Scanner(System.in);
 		// Values of process ID, text size, and data size.
 		int pid = 0, TextSize = 0, DataSize = 0;
+		// A process being loaded into memory.
+		Process p;
 		
 		// Read the event file line by line.
 		while ((strLine = br.readLine()) != null) {
@@ -96,10 +139,23 @@ public class SimPagingSystem {
 				TextSize = Integer.parseInt(tokens[1]);
 				DataSize = Integer.parseInt(tokens[2]);
 				// Simulate the creation of a process with allocated
-				// memory from the loader.
+				// memory and mappings from the loader.
 				System.out.println("Loading process " + pid + ":" +
 						" TextSize = " + TextSize + ", DataSize = " +
 						DataSize + ".");
+				p = new Process(pid, SimPagingSystem.pageSize, 
+								TextSize, DataSize, sim.freeFrames);
+				// Add the new process to the list of processes.
+				sim.processList.add(p);
+				
+				// Print all the page tables for all processes.
+				System.out.println("Page table(s)");
+				for(Process pr : sim.processList)
+					sim.printProcessPageTables(pr);
+				
+				// Print the physical memory frame page table.
+				
+				
 			}
 		}
 		
