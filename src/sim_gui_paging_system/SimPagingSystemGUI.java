@@ -45,7 +45,7 @@ public class SimPagingSystemGUI extends JPanel {
 		
 		// Set up file input.
 		try {
-		fstream = new FileInputStream("input3a.data");
+		fstream = new FileInputStream("input3b.data");
 		in = new DataInputStream(fstream);
 		br = new BufferedReader(new InputStreamReader(in));
 		} 
@@ -148,23 +148,52 @@ public class SimPagingSystemGUI extends JPanel {
 						if(j == 0 && k == 0) {
 							pageLabel[j][k].setText("Process " + 
 												  p.getPcb().getPid());
+							pagePanel.add(pageLabel[j][k]);
 						}
 						else if(j == 0 && k == 1) {
 							pageLabel[j][k].setText("Page");
+							pagePanel.add(pageLabel[j][k]);
 						}
 						else if(j == 0 && k == 2) {
 							pageLabel[j][k].setText("Frame");
+							pagePanel.add(pageLabel[j][k]);
 						}
 						else if(j == 1 && k == 0) {
 							pageLabel[j][k].setText("Text");
+							pagePanel.add(pageLabel[j][k]);
 						}
 						else if(j == 1 + p.getPcb().getNumTextFrames()
 								&& k == 0) {
 							pageLabel[j][k].setText("Data");
+							pagePanel.add(pageLabel[j][k]);
 						}
-						
-						
-						pagePanel.add(pageLabel[j][k]);
+						else if(j < 1 + p.getPcb().getNumTextFrames()
+								&& k == 2) {
+							pageLabel[j][k].setText
+								("" + p.getPcb().getPageTableT()[j-1]);
+							pagePanel.add(pageLabel[j][k]);
+						}
+						else if(j < 1 + p.getPcb().getNumTextFrames()
+								&& k == 1) {
+							pageLabel[j][k].setText
+								("" + (j-1));
+							pagePanel.add(pageLabel[j][k]);
+						}
+						else if(j == 1 + p.getPcb().getNumTextFrames()
+								&& k == 1) {
+							pageLabel[j][k].setText
+								("" + (j - p.getPcb().getNumTextFrames() - 1));
+							pagePanel.add(pageLabel[j][k]);
+							
+							// Now add the rest of the data entries.
+							for(int n = j+1; n < rows ; ++n) {
+								pageLabel[n][2] = new JLabel();
+								pageLabel[n][2].setText
+									("" + p.getPcb().getPageTableD()[n - 
+	                                 p.getPcb().getNumTextFrames()-1]);
+								pagePanel.add(pageLabel[n][2]);
+							}
+						}					
 					}
 				}
 				
@@ -173,6 +202,7 @@ public class SimPagingSystemGUI extends JPanel {
 		}
 		else { // create a new one and update it
 			frame.remove(pageTablePanel);
+			// TODO add all process page tables to frame
 			
 		}
 		
